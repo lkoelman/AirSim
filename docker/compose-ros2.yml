@@ -1,0 +1,39 @@
+# ref: https://github.com/compose-spec/compose-spec/blob/master/spec.md
+# gpu: https://docs.docker.com/compose/gpu-support/
+
+version: "3.8"
+
+
+services:
+  # Container with database
+  ros:
+    image: ros_airsim_deps:galactic-ros-base
+    volumes:
+      - "airsim_src:/home/root/AirSim"
+    network_mode: "host"
+    tty: true
+
+  # Container with vision pipeline and sensor nodes
+  airsim:
+    image: airsim_epic:dev-slim-4.27.2 
+    runtime: nvidia
+    environment:
+      DISPLAY: "${DISPLAY}"
+    network_mode: "host"
+    ipc: "host"
+    tty: true
+    security_opt: 
+      - "apparmor:unconfined"
+    volumes:
+      - "/tmp/.X11-unix:/tmp/.X11-unix"
+      - "airsim_src:/home/ue4/AirSim"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+    
+
+volumes:
+  airsim_src:
+    driver: local

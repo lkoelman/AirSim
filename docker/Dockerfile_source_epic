@@ -1,0 +1,17 @@
+ARG BASE_IMAGE=ghcr.io/epicgames/unreal-engine:dev-slim-4.27.2
+FROM $BASE_IMAGE
+
+USER root
+RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --no-install-recommends \
+	rsync \
+    wget \
+    x11-xserver-utils
+
+USER ue4
+RUN cd /home/ue4 && \
+	git clone --progress https://github.com/Microsoft/AirSim.git && \
+	cd AirSim && \
+	./setup.sh && \
+	./build.sh
+
+WORKDIR /home/ue4
