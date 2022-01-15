@@ -1,0 +1,11 @@
+ARG BASE_IMAGE=px4io/px4-dev-nuttx-focal
+FROM $BASE_IMAGE
+
+ARG PX4_STABLE="v1.12.3"
+ARG PX4_SRC="/src/PX4-Autopilot"
+RUN mkdir -p $PX4_SRC && \
+    git clone -b $PX4_STABLE --recurse-submodules https://github.com/PX4/PX4-Autopilot.git $PX4_SRC
+
+WORKDIR $PX4_SRC
+ENTRYPOINT ["bash" "-c"]
+CMD ["make" "px4_sitl_default" "none_iris"]

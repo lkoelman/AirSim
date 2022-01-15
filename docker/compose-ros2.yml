@@ -9,7 +9,7 @@ services:
   ros:
     image: ros_airsim_deps:galactic-ros-base
     volumes:
-      - "airsim_src:/home/root/AirSim"
+      - "airsim_src_ros2:/home/root/AirSim"
     network_mode: "host"
     tty: true
 
@@ -26,7 +26,7 @@ services:
       - "apparmor:unconfined"
     volumes:
       - "/tmp/.X11-unix:/tmp/.X11-unix"
-      - "airsim_src:/home/ue4/AirSim"
+      - "airsim_src_ros2:/home/ue4/AirSim"
     deploy:
       resources:
         reservations:
@@ -35,5 +35,5 @@ services:
     
 
 volumes:
-  airsim_src:
+  airsim_src_ros2:
     driver: local

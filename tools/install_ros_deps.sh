@@ -17,7 +17,9 @@ sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main
 sudo apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
 
 sudo apt-get update
-sudo apt-get install -y -qq ros-$ROS_DISTRO-ros-base
+# sudo apt-get install -y -qq ros-$ROS_DISTRO-ros-base  # for CI
+sudo apt-get install -y -qq ros-$ROS_DISTRO-ros-desktop-full \
+    ros-$ROS_DISTRO-depth-image-proc
 
 echo "source /opt/ros/$ROS_DISTRO/setup.bash" >> ~/.bashrc
 
@@ -39,9 +41,6 @@ fi
 sudo apt-get install -y gcc-8 g++-8
 sudo apt-get install -y ros-$ROS_DISTRO-mavros* ros-$ROS_DISTRO-tf2-sensor-msgs ros-$ROS_DISTRO-tf2-geometry-msgs
 
-# TODO: Remove this if-block when new 0.7.0 release of catkin_tools is available
-if [[ "$DISTRO" == "focal" ]]; then
-    pip3 install "git+https://github.com/catkin/catkin_tools.git#egg=catkin_tools"
-else
-    pip3 install catkin-tools
-fi
+sudo /opt/ros/$ROS_DISTRO/lib/mavros/install_geographiclib_datasets.sh
+
+pip3 install catkin-tools

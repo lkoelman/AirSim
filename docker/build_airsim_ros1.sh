@@ -2,17 +2,16 @@
 AIRSIM_ROOT=".."
 
 # Build ROS container
-docker build -t ros_airsim_deps:melodic-ros-base \
-    -f $AIRSIM_ROOT/tools/Dockerfile-ROS $AIRSIM_ROOT/tools
+## A: from official ROS-noetic-desktop image
+docker build -t ros_airsim_deps:noetic-ros-full -f Dockerfile-ROS-desktop .
+## B: from modied AirSim ROS image
+# docker build -t ros_airsim_deps:melodic-ros-full \
+#     -f $AIRSIM_ROOT/tools/Dockerfile-ROS $AIRSIM_ROOT/tools
 
-xhost +local:root
-docker-compose -f compose-ros1.yml up
-
-xhost -local:root
-
-# in container:
-# source /opt/ros/melodic/setup.bash
-# cd ~/AirSim/ros
-# catkin build -DCMAKE_C_COMPILER=gcc-8 -DCMAKE_CXX_COMPILER=g++-8
-# roslaunch airsim_ros_pkgs airsim_node.launch;
-# roslaunch airsim_ros_pkgs rviz.launch;
+# Build PX4 container
+PX4_IMG=px4io/px4-dev-nuttx-focal
+PX4_STABLE="v1.12.3"
+docker build -f Dockerfile-PX4 \
+    --build-arg BASE_IMAGE=${PX4_IMG} \
+    --build-arg PX4_STABLE=${PX4_STABLE} \
+    -t ${PX4_IMG}:src-${PX4_STABLE} .

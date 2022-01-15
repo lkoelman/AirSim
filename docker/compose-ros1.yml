@@ -5,33 +5,56 @@ version: "3.8"
 
 
 services:
-  # Container with database
-  ros:
-    image: ros_airsim_deps:melodic-ros-base
-    volumes:
-      - "airsim_src:/home/testuser/AirSim"
-    network_mode: "host"
-    tty: true
-
-  # Container with vision pipeline and sensor nodes
+  # AirSim plugin files (compiled)
   airsim:
     image: airsim_epic:dev-slim-4.27.2 
     runtime: nvidia
+    volumes:
+      - "/tmp/.X11-unix:/tmp/.X11-unix"
+      - "airsim_src:/home/ue4/AirSim"
     environment:
       DISPLAY: "${DISPLAY}"
+      NVIDIA_VISIBLE_DEVICES: all
+      NVIDIA_DRIVER_CAPABILITIES: all
     network_mode: "host"
     ipc: "host"
     tty: true
     security_opt: 
       - "apparmor:unconfined"
-    volumes:
-      - "/tmp/.X11-unix:/tmp/.X11-unix"
-      - "airsim_src:/home/ue4/AirSim"
     deploy:
       resources:
         reservations:
           devices:
             - capabilities: [gpu]
+
+  # ROS nodes for autonomy
+  ros:
+    image: ros_airsim_deps:noetic-ros-full
+    runtime: nvidia
+    volumes:
+      - "/tmp/.X11-unix:/tmp/.X11-unix"
+      - "airsim_src:/home/testuser/AirSim"
+      - "${HOME}/workspace:/home/testuser/workspace"
+    environment:
+      DISPLAY: "${DISPLAY}"
+      NVIDIA_VISIBLE_DEVICES: all
+      NVIDIA_DRIVER_CAPABILITIES: all
+    network_mode: "host"
+    ipc: "host"
+    tty: true
+    security_opt: 
+      - "apparmor:unconfined"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+
+  # PX4 flight controller
+  # px4:
+  #   image: px4io/px4-dev-nuttx-focal:src-v1.12.3
+  #   network_mode: "host"
+  #   tty: true
     
 
 volumes:
